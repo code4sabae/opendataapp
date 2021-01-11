@@ -32,6 +32,7 @@ class MapGSICSV extends HTMLElement {
 
     const fn = this.getAttribute("src");
     console.log(fn);
+    //const data = CSV.toJSON(CSV.decode(SJIS.decodeAuto(new Uint8Array(await (await fetch(fn)).arrayBuffer()))));
     const data = CSV.toJSON(await CSV.fetch(fn));
 
     const makeTable = (d) => {
