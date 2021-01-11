@@ -1,0 +1,96 @@
+
+<!DOCTYPE html><html><head>
+<meta charset="utf-8">
+	<title>三宮歩行者数推移（神戸市オープンデータ使用）</title>
+<style>
+body {
+	text-align: center;
+}
+a {
+	color: gray !important;
+}
+</style>
+</head><body>
+<h1>三宮歩行者数推移（神戸市データ使用）</h1>
+<script type="module">
+
+import Chart from "https://code4sabae.github.io/kafumon/lib/Chart.mjs";
+import { CSV } from "https://code4sabae.github.io/js/CSV.js";
+import { SJIS } from "https://code4sabae.github.io/js/SJIS.js";
+
+const makeWeekly = (data) => {
+
+};
+
+const showChart = (chart, data0) => {
+  const data = data0; // makeWeekly(data0);
+
+  const getUnique = (name) => {
+    const res = [];
+    for (const d of data) {
+      const n = d[name];
+      if (res.indexOf(n) == -1) {
+        res.push(n);
+      }
+    }
+    return res;
+  };
+	const makeColor = hue => {
+		return `hsla(${hue},60%,50%,100%)`;
+	};
+
+	const dates = getUnique("日時"); //.filter(d => new Date(d).getDate() == 1);
+  const labels = getUnique("測定箇所名称");
+  console.log(dates);
+  console.log(labels);
+  const datasets = [];
+  let idx = 0;
+  for (const label of labels) {
+    const line = [];
+    for (const d of dates) {
+      const x = data.find(x => x.測定箇所名称 == label && x.日時 == d);
+      const num = x ? (x["歩行者数"] || "0") : "0";
+      line.push(parseInt(num));
+    }
+    console.log(line);
+    const col = idx++ * 300 / labels.length;
+  	datasets.push({ type: "line", label, fill: false, borderColor: makeColor(col), lineTension: 0, data: line });
+  }
+	
+  const config = {
+    data: { labels: dates, datasets },
+    options: {
+      scales: {
+        xAxes: [{ scaleLabel: { display: false, labelString: "日付" } }],
+        yAxes: [{ scaleLabel: { display: true, labelString: "歩行者数" }, ticks: { beginAtZero: true } }],
+      },
+      legend: { display: true }
+    }
+	};
+  chart.width = 600;
+  chart.height = 320;
+  new Chart.Chart(chart, config);
+};
+
+window.onload = async () => {
+  // const scsv = SJIS.decode(new Uint8Array(await (await fetch("./sannomiya_hokosha_data.csv")).arrayBuffer()));
+  const scsv = await (await fetch("https://code4sabae.github.io/opendatagojp/csv/kobe-shi/pedestrian-flows.csv")).text();
+  const data = CSV.toJSON(CSV.decode(scsv));
+	console.log(data);
+	showChart(canvas, data);
+};
+</script>
+<canvas id="canvas"></canvas>
+<div>
+	Data: CC BY <a href="https://portal.opendata.go.jp/docs/kobe-shi-product/1/routes/pedestrian-flows/get">三宮エリアの人流データ解析に使用している人流データ - Kobe-shi COVID-19 APIs | Open Data API Portal</a> → <a href="https://code4sabae.github.io/opendatagojp/csv/kobe-shi/pedestrian-flows.csv">CSV</a><br>
+  App: CC BY <a href="https://fukuno.jig.jp/3092">@taisukef 福野泰介の一日一創</a><br>
+</div>
+
+<div style="margin:1em">
+	<a href="https://www.stopcovid19.jp/">
+	<img src="https://www.stopcovid19.jp/img/stopcovid19_banner.png" style="width:70vw"><br>
+	「COVID-19 JAPAN 新型コロナウイルス対策ダッシュボード」<br>
+	</a>
+</div>
+
+</body><html>
