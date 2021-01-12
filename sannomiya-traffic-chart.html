@@ -1,4 +1,3 @@
-
 <!DOCTYPE html><html><head>
 <meta charset="utf-8">
 	<title>三宮歩行者数推移（神戸市オープンデータ使用）</title>
@@ -72,14 +71,20 @@ const showChart = (chart, data0) => {
   new Chart.Chart(chart, config);
 };
 
-window.onload = async () => {
-  // const scsv = SJIS.decode(new Uint8Array(await (await fetch("./sannomiya_hokosha_data.csv")).arrayBuffer()));
-  const scsv = await (await fetch("https://code4sabae.github.io/opendatagojp/csv/kobe-shi/pedestrian-flows.csv")).text();
-  const data = CSV.toJSON(CSV.decode(scsv));
-	console.log(data);
-	showChart(canvas, data);
+window.onload = () => {
+  setTimeout(async () => {
+    // const scsv = SJIS.decode(new Uint8Array(await (await fetch("./sannomiya_hokosha_data.csv")).arrayBuffer()));
+    //const url = "https://www.city.kobe.lg.jp/documents/33478/sannomiya_hokosha_data.csv"; // blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+    const url = "https://code4sabae.github.io/opendatagojp/csv/kobe-shi/pedestrian-flows.csv";
+    const scsv = await (await fetch(url)).text();
+    const data = CSV.toJSON(CSV.decode(scsv));
+    console.log(data);
+    loading.style.display = "none";
+    showChart(canvas, data);
+  }, 100);
 };
 </script>
+<div id="loading">読込＆表示準備中です。しばらくお待ち下さい。</div>
 <canvas id="canvas"></canvas>
 <div>
 	Data: CC BY <a href="https://portal.opendata.go.jp/docs/kobe-shi-product/1/routes/pedestrian-flows/get">三宮エリアの人流データ解析に使用している人流データ - Kobe-shi COVID-19 APIs | Open Data API Portal</a> → <a href="https://code4sabae.github.io/opendatagojp/csv/kobe-shi/pedestrian-flows.csv">CSV</a><br>
