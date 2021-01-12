@@ -1,2 +1,2 @@
 # opendataapp
-https://code4sabae.github.io/opendataapp/. 
+https://code4sabae.github.io/opendataapp/  
